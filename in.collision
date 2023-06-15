@@ -1,5 +1,6 @@
 # Initialisation
 
+# ----------Start of user parameters----------
 # Nanoparticle properties
 
 variable temperature equal 300.0
@@ -8,9 +9,14 @@ variable lattice_constant equal 2.866
 variable lattice_type string bcc
 variable nanoparticle_atom_mass equal 55.847
 
+# Initial conditions
+variable particle_initial_velocity_vx equal -5
+
 # Colliding atom properties
 
-variable colliding_atom_mass equal 12
+variable colliding_atom_mass equal 39.948
+
+# ----------End of user parameters----------
 
 # Cell parameters, distance unit Angstrom, energy unit eV, time unit picosecond
 
@@ -22,13 +28,16 @@ atom_style        full
 # Generate spherical particle
 
 lattice ${lattice_type} ${lattice_constant}
+
+# if region style = block,  xlo xhi ylo yhi zlo zhi
 region box block -20 20 -20 20 -20 20
 create_box 2 box
 
 region particle sphere 0 0 0 ${particle_radius} side in units box
 
+# `particle' is the group-ID for the nanoparticle
 create_atoms 1 region particle
-group particle type 1
+group particle type 1 
 
 # Generate single atom
 
@@ -41,16 +50,18 @@ mass 1 ${nanoparticle_atom_mass}
 mass 2 ${colliding_atom_mass}
 timestep 1.0e-3
 
-# Potential definition
+# Potential definition, hybrid type
 
 pair_style hybrid eam/fs lj/cut 12 zero 12
-pair_coeff * * eam/fs /Users/phankl/phd/lammps/potentials/Fe_mm.eam.fs Fe NULL
+# pair_coeff * * eam/fs /Users/phankl/phd/lammps/potentials/Fe_mm.eam.fs Fe NULL
+pair_coeff * * eam/fs /usr/share/lammps/potentials/Fe_mm.eam.fs Fe NULL
 pair_coeff 1 2 lj/cut 1.0 1.0
 pair_coeff 2 2 zero
 
+# thermo N = output thermodynamics every N timesteps
 thermo 1000
 
-# Equilibrate particle
+## Equilibrate particle
 
 velocity particle create ${temperature} 4928459 mom yes rot yes dist gaussian
 fix nvt particle nvt temp ${temperature} ${temperature} 1
@@ -63,10 +74,16 @@ fix nve all nve
 
 run 50000
 
-# Start collision
+# Start collision simulation
+# Output results every 100 timesteps
 
-dump custom all custom 100 collision.lmp id type x y z 
+shell mkdir results
+# dump custom all custom 100 results/collision.lmp id type x y z
+dump atom_dump atom custom 100 results/collision_atom.lpm x y z 
 
-velocity atom set -5 0 0
+# velocity atom set -10 0 0
+velocity atom set ${particle_initial_velocity_vx} 0 0
 
 run 50000
+
+print "LAMMPS simulation done."
