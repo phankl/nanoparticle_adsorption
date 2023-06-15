@@ -12,7 +12,7 @@ variable nanoparticle_atom_mass equal 55.847
 
 variable colliding_atom_mass equal 12
 
-# Cell parameters
+# Cell parameters, distance unit Angstrom, energy unit eV, time unit picosecond
 
 units             metal
 dimension         3
