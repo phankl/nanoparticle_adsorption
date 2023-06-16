@@ -3,8 +3,8 @@
 # ----------Start of user parameters----------
 # Nanoparticle properties
 
-variable temperature equal 300.0
-variable particle_radius equal 5.0
+variable temperature equal TEMPERATURE
+variable particle_radius equal PARTICLE_RADIUS
 variable lattice_constant equal 2.866
 variable lattice_type string bcc
 variable nanoparticle_atom_mass equal 55.847

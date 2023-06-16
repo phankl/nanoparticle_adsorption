@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# one can change neutral nucleation rate and positive nucleation rate
+# TEMPLATE2, integrator_step_length = 0.02, make_snapshot_every = 0.2
+# set snapshot frequency in [s], note if value is too small, integrator behaves weirdly
+
+for particle_radius in 5.0; do
+	for temperature in 300.0; do
+		#for n_tot in 85; do
+#			make_snapshot_every=0.2 \
+
+			#initial_filename="initial_$nucleation_rate_neutral-charge_$nucleation_rate_positive.dat"
+			#echo "Initial file name is $initial_filename"\	
+
+
+			sed <input.TEMPLATE >input.collision \
+				"s/PARTICLE_RADIUS/$particle_radius/g; \
+				s/TEMPERATURE/$temperature/g;\
+				"
+			#./ioncage.out > output/"$initial_filename"
+			lmp -in input.collision
+
+	#	done
+	done
+done
+
