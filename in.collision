@@ -3,14 +3,16 @@
 # ----------Start of user parameters----------
 # Nanoparticle properties
 
-variable temperature equal 300.0
-variable particle_radius equal 10.0
+variable temperature equal 800.0
+variable particle_radius equal 5.0
 variable lattice_constant equal 2.866
 variable lattice_type string bcc
 variable nanoparticle_atom_mass equal 55.847
+variable lj_params_epsilon equal 0.2
+variable lj_params_sigma equal 2.85
 
 # Initial conditions
-variable particle_initial_velocity_vx equal -5
+variable particle_initial_velocity_vx equal -15
 
 # Colliding atom properties
 
@@ -55,7 +57,7 @@ timestep 1.0e-3
 pair_style hybrid eam/fs lj/cut 12 zero 12
 # pair_coeff * * eam/fs /Users/phankl/phd/lammps/potentials/Fe_mm.eam.fs Fe NULL
 pair_coeff * * eam/fs /usr/share/lammps/potentials/Fe_mm.eam.fs Fe NULL
-pair_coeff 1 2 lj/cut 1.0 1.0
+pair_coeff 1 2 lj/cut ${lj_params_epsilon} ${lj_params_sigma}
 pair_coeff 2 2 zero
 
 # thermo N = output thermodynamics every N timesteps
@@ -78,7 +80,7 @@ run 50000
 # Output results every 100 timesteps
 
 shell mkdir results
-# dump custom all custom 100 results/collision.lmp id type x y z
+dump custom all custom 100 results/collision.lmp id type x y z
 dump atom_dump atom custom 100 results/collision_atom.lpm x y z 
 
 # velocity atom set -10 0 0
