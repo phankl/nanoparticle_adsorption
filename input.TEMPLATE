@@ -81,8 +81,8 @@ run 50000
 # Output results every 100 timesteps
 
 shell cd results
-shell mkdir results_R${particle_radius}_epsilon${lj_params_epsilon}
-shell cd results_R${particle_radius}_epsilon${lj_params_epsilon}
+shell mkdir results_T${temperature}_R${particle_radius}_epsilon${lj_params_epsilon}
+shell cd results_T${temperature}_R${particle_radius}_epsilon${lj_params_epsilon}
 
 dump custom all custom 100 collision.lmp id type x y z
 dump atom_dump atom custom 100 collision_atom.lpm x y z 
