@@ -4,6 +4,7 @@ import numpy as np
 import scipy.stats
 
 lammps_path = "/Users/phankl/phd/lammps/src/lmp_g++_openmpi"
+lammps_path = "lmp"
 
 
 def run_lammps(
@@ -82,6 +83,7 @@ def equilibrate_particle(radius, temperature, species, label=0):
     pair_style hybrid eam/alloy lj/cut 10 zero 10
     pair_coeff * * eam/alloy FeNiCr_Bonny_2013_ptDef.eam.alloy Fe NULL
     pair_coeff 1 2 lj/cut 2.7466705 1.8530700 7.41227500
+    # lj/cut, epsilon (energy unit), sigma (distance unit), LJ cutoff(distance unit)
     pair_coeff 2 2 zero
     
     # equilibrate particle
@@ -141,7 +143,7 @@ def simulate_collision(
 
     compute pe_per_atom atom pe/atom
     compute pe_colliding_atom atom reduce sum c_pe_per_atom
-    fix ave_pe all ave/time 1 1 1 c_pe_colliding_atom file pe_{collision_label}.dat ave one
+    fix ave_pe all ave/time 1 1 1 c_pe_colliding_atom file results/pe_{collision_label}.dat ave one
     
     run {collision_steps}
     """
