@@ -1,2 +1,4 @@
 log.lammps
 collision.lmp
+.ipynb_checkpoints/
+.ipynb_checkpoints/*
