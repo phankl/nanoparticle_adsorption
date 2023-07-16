@@ -36,7 +36,7 @@ def parse_output_file(file_path):
 
     return df
 
-def generate_collider(molecule, structure_file):
+def generate_collider(structure_file, molecule):
     collider = ase.build.molecule(molecule)
     ase.io.write(structure_file, collider)
 
@@ -129,17 +129,13 @@ def write_cottrell_slurm_file(slurm_file, paths, n_cores):
     ntasks=$SLURM_NTASKS
     current_index=$SLURM_ARRAY_TASK_ID
     workdir="${{SLURM_SUBMIT_DIR}}/${{paths[current_index]}}"
-
-    #SBATCH --chdir="$workdir"
     
     #load some modules and conda environments
     module purge
     module -q load intel
-    
-    conda activate dftbplus
-    
+        
     #creating a string which has the command
-    CMD="${{application}} ${{options}}"
+    CMD="cd ${{workdir}}; ${{application}} ${{options}}"
     
     #just some info for the output file
     echo "Running command: $CMD"
@@ -201,5 +197,42 @@ def write_nanoparticle_files(
                     nose_hoover_coupling,
                     xtb_method,
                 )
+
+    write_cottrell_slurm_file(slurm_file, paths, n_cores)
+
+
+def write_collider_files(
+    molecules,
+    temperatures,
+    time_step=1.0,
+    n_steps=10000,
+    nose_hoover_coupling=0.01,
+    xtb_method="GFN1-xTB",
+    n_cores=1,
+    structure_file="struc.xyz",
+    input_file="dftb_in.hsd",
+    slurm_file="slurm_submit",
+):
+    paths = []
+    
+    for molecule in molecules:
+        for temperature in temperatures:
+            path = f"collider/{molecule}_{temperature}K"
+            paths += [path]
+            Path(path).mkdir(parents=True, exist_ok=True)
+
+            generate_collider(
+                f"{path}/{structure_file}",
+                molecule,
+            )
+            equilibrate(
+                structure_file,
+                f"{path}/{input_file}",
+                time_step,
+                n_steps,
+                temperature,
+                nose_hoover_coupling,
+                xtb_method,
+            )
 
     write_cottrell_slurm_file(slurm_file, paths, n_cores)
