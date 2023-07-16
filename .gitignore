@@ -5,3 +5,9 @@ collision.lmp
 github_memo.txt
 __pycache__/
 __pycache__/*
+collision
+collision/*
+nanoparticle
+nanoparticle/*
+collider
+collider/*
