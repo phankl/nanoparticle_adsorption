@@ -447,6 +447,9 @@ def write_collision_files(
                 collider, position_offsets[i], velocity_offsets[i]
             )
             collision_atoms = nanoparticle + sample_collider
+            collision_atoms_no_velocities = ase.Atoms(
+                collision_atoms.symbols, collision_atoms.get_positions()
+            )
             ase.io.write(f"{path}/{structure_file}", collision_atoms)
 
             dftbplus_collide(
