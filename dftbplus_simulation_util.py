@@ -97,6 +97,7 @@ def dftbplus_collide(
         TimeStep [fs] = {time_step}
         Steps = {n_steps}
         MovedAtoms = 1:-1
+        Thermostat = None {{}}
         {velocity_string}
     }}
 
