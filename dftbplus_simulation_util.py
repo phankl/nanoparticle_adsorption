@@ -450,10 +450,10 @@ def write_collision_files(
             collision_atoms_no_velocities = ase.Atoms(
                 collision_atoms.symbols, collision_atoms.get_positions()
             )
-            ase.io.write(f"{path}/{structure_file}", collision_atoms)
+            ase.io.write(f"{path}/{structure_file}", collision_atoms_no_velocities)
 
             dftbplus_collide(
-                f"{path}/{structure_file}",
+                structure_file,
                 f"{path}/{input_file}",
                 time_step,
                 n_steps,
