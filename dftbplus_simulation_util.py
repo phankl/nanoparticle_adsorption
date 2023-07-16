@@ -103,6 +103,7 @@ def dftbplus_collide(
 
     Hamiltonian = xTB {{
         Method = "{xtb_method}"
+        MaxSCCIterations = 1000
     }}
 
     Options {{ WriteDetailedOut = No }}
@@ -143,6 +144,7 @@ def dftbplus_equilibrate(
 
     Hamiltonian = xTB {{
         Method = "{xtb_method}"
+        MaxSCCIterations = 1000
     }}
 
     Options {{ WriteDetailedOut = No }}
