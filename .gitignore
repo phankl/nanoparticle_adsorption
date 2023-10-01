@@ -11,3 +11,7 @@ nanoparticle
 nanoparticle/*
 collider
 collider/*
+.DS_Store
+.DS_Store/*
+geo_end.xyz
+slurm_submit

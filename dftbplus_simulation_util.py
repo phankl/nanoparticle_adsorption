@@ -9,7 +9,7 @@ import ase.io
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import scipy.stats
+import scipy.stats, scipy.spatial.transform
 
 
 def parse_output_file(file_path):
@@ -370,7 +370,6 @@ def initialise_collider(atoms, position_offset, velocity_offset):
 
 
 def generate_velocities(n_samples, mb_scale, seed):
-    np.random.seed(seed)
 
     # generate a set of random velocities according to our requirements
     magnitudes = scipy.stats.maxwell.rvs(size=n_samples, scale=mb_scale)
@@ -398,13 +397,18 @@ def calculate_mb_scale(temperature, mass):
 def generate_simulation_parameters(
     nanoparticle_radius, temperature, n_samples, seed, mass=12
 ):
+    np.random.seed(seed)
+    
     mb_scale = calculate_mb_scale(temperature, mass)
     atom_velocities, directions = generate_velocities(n_samples, mb_scale, seed)
     atom_positions = generate_positions(
         directions, nanoparticle_radius, initial_distance=10
     )
 
-    return atom_positions, atom_velocities
+    nanoparticle_rotations = scipy.spatial.transform.Rotation.random(n_samples)
+    collider_rotations = scipy.spatial.transform.Rotation.random(n_samples)
+
+    return atom_positions, atom_velocities, nanoparticle_rotations, collider_rotations
 
 
 def write_collision_files(
@@ -437,7 +441,7 @@ def write_collision_files(
         collider = centre_atoms(collider)
 
         collider_mass = np.sum(collider.get_masses())
-        position_offsets, velocity_offsets = generate_simulation_parameters(
+        position_offsets, velocity_offsets, nanoparticle_rotations, collider_rotations = generate_simulation_parameters(
             radius, temperature, n_samples, seed, mass=collider_mass
         )
 
@@ -445,6 +449,11 @@ def write_collision_files(
             path = f"collision/{symbol}_{radius}A_{molecule}_{temperature}K_{i}"
             paths += [path]
             Path(path).mkdir(parents=True, exist_ok=True)
+
+            nanoparticle.positions = nanoparticle_rotations[i] @ nanoparticle.positions
+            nanoparticle.velocities = nanoparticle_rotations[i] @ nanoparticle.velocities
+            collider.positions = collider_rotations[i] @ collider.positions
+            collider.velocities = collider_rotations[i] @ collider.velocities
 
             sample_collider = initialise_collider(
                 collider, position_offsets[i], velocity_offsets[i]
