@@ -410,6 +410,10 @@ def generate_simulation_parameters(
 
     return atom_positions, atom_velocities, nanoparticle_rotations, collider_rotations
 
+def rotate_atoms(atoms, rotation):
+    r = rotation.as_matrix()
+    atoms.set_positions((r @ atoms.get_positions().T).T)
+    atoms.set_velocities((r @ atoms.get_velocities().T).T) 
 
 def write_collision_files(
     symbols,
@@ -450,10 +454,8 @@ def write_collision_files(
             paths += [path]
             Path(path).mkdir(parents=True, exist_ok=True)
 
-            nanoparticle.positions = nanoparticle_rotations[i] @ nanoparticle.positions
-            nanoparticle.velocities = nanoparticle_rotations[i] @ nanoparticle.velocities
-            collider.positions = collider_rotations[i] @ collider.positions
-            collider.velocities = collider_rotations[i] @ collider.velocities
+            rotate_atoms(nanoparticle, nanoparticle_rotations[i])
+            rotate_atoms(collider, collider_rotations[i])
 
             sample_collider = initialise_collider(
                 collider, position_offsets[i], velocity_offsets[i]

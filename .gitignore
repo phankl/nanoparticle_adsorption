@@ -15,3 +15,5 @@ collider/*
 .DS_Store/*
 geo_end.xyz
 slurm_submit
+*_setup.py
+submit_*
